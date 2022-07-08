@@ -346,9 +346,10 @@ public:
   bool __fastcall IsEnabled(uint32_t *a1) { return true; }
 };
 
+// Replaces XPads with our custom gamepad class
 // 48 8D 05 A9 3C 9B 02 89 51 08 48 89 01 0F 57 C0
 BaseGamepad *__fastcall InitializeXPad(BaseGamepad *, uint32_t);
-constexpr uintptr_t InitializeXPadAddr = 0x795360;
+constexpr uintptr_t InitializeXPadAddr = 0x794760 + 0xC00;
 decltype(&InitializeXPad) InitializeXPad_Original;
 
 BaseGamepad *__fastcall InitializeXPad(BaseGamepad *gamepad, uint32_t gamepadIndex) {
@@ -364,6 +365,34 @@ BaseGamepad *__fastcall InitializeXPad(BaseGamepad *gamepad, uint32_t gamepadInd
   //}
   return gamepad;
 }
+
+// Allows joystick keys to be treated as axes
+bool __fastcall IsJoystick(uint16_t key) {
+  auto result = false;
+  result |= ((key >= (uint16_t)RED4ext::EInputKey::IK_JoyX) && (key <= (uint16_t)RED4ext::EInputKey::IK_JoyR));
+  result |= ((key >= (uint16_t)RED4ext::EInputKey::IK_JoyU) && (key <= (uint16_t)RED4ext::EInputKey::IK_JoySlider2));
+  return result;
+}
+
+// takes a 16b version of RED4ext::EInputKey
+// B8 96 00 00 00 66 2B C8 66 83 F9 05 0F 96 C0 C3
+bool __fastcall IsAxis(uint16_t key);
+constexpr uintptr_t IsAxisAddr = 0x2D146A0 + 0xC00;
+decltype(&IsAxis) IsAxis_Original;
+
+bool __fastcall IsAxis(uint16_t key) {
+  return IsAxis_Original(key) || IsJoystick(key);
+}
+
+// BA 96 00 00 00 0F B7 C1 66 2B C2 66 83 F8 05 76
+bool __fastcall IsButtonToAxis(uint16_t key);
+constexpr uintptr_t IsButtonToAxisAddr = 0x2D146B0 + 0xC00;
+decltype(&IsButtonToAxis) IsButtonToAxis_Original;
+
+bool __fastcall IsButtonToAxis(uint16_t key) { 
+  return IsButtonToAxis_Original(key) && !IsJoystick(key);
+}
+
 
 RED4EXT_C_EXPORT void RED4EXT_CALL RegisterTypes() {
   spdlog::info("Registering classes & types");
@@ -451,6 +480,12 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
     while (!aSdk->hooking->Attach(aHandle, RED4EXT_OFFSET_TO_ADDR(InitializeXPadAddr), &InitializeXPad,
                                   reinterpret_cast<void **>(&InitializeXPad_Original)))
       ;
+    while (!aSdk->hooking->Attach(aHandle, RED4EXT_OFFSET_TO_ADDR(IsAxisAddr), &IsAxis,
+                                  reinterpret_cast<void **>(&IsAxis_Original)))
+      ;
+    while (!aSdk->hooking->Attach(aHandle, RED4EXT_OFFSET_TO_ADDR(IsButtonToAxisAddr), &IsButtonToAxis,
+                                  reinterpret_cast<void **>(&IsButtonToAxis_Original)))
+      ;
 
     break;
   }
@@ -460,6 +495,8 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
 
     spdlog::info("Shutting down");
     aSdk->hooking->Detach(aHandle, RED4EXT_OFFSET_TO_ADDR(InitializeXPadAddr));
+    aSdk->hooking->Detach(aHandle, RED4EXT_OFFSET_TO_ADDR(IsAxisAddr));
+    aSdk->hooking->Detach(aHandle, RED4EXT_OFFSET_TO_ADDR(IsButtonToAxisAddr));
     spdlog::shutdown();
     break;
   }
