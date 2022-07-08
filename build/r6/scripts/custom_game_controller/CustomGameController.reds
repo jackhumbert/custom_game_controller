@@ -12,7 +12,7 @@
 
 public native class ICustomGameController extends IScriptable {
   public native let buttons: array<Bool>;
-  // public native let switches: array<GameControllerSwitchPosition>;
+  public native let switches: array<Uint32>;
   public native let axes: array<Float>;
   
   // public native let buttonKeys: array<EInputKey>;

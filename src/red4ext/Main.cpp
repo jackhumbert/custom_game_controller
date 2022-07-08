@@ -160,6 +160,9 @@ struct ICustomGameController : RED4ext::IScriptable {
     }
     switchesNew.resize(numSwitches);
 
+    rawGameController.GetCurrentReading(buttonsNew, switchesNew, axesNew);
+    UpdateValues();
+
     auto onInit = GetType()->GetFunction("OnSetup");
     if (onInit) {
       auto stack = RED4ext::CStack(this, nullptr, 0, nullptr, 0);
@@ -178,6 +181,30 @@ struct ICustomGameController : RED4ext::IScriptable {
       onUpdate->Execute(&stack);
     }
   };
+
+  void UpdateValues() {
+    if (!connected)
+      return;
+
+    auto buttonCount = rawGameController.ButtonCount();
+    for (int i = 0; i < buttonCount; ++i) {
+      if (buttons[i] != buttonsNew[i]) {
+        buttons[i] = buttonsNew[i];
+      }
+    }
+    auto axisCount = rawGameController.AxisCount();
+    for (int i = 0; i < axisCount; ++i) {
+      if (axes[i] != axesNew[i]) {
+        axes[i] = axesNew[i];
+      }
+    }
+    auto switchCount = rawGameController.SwitchCount();
+    for (int i = 0; i < switchCount; ++i) {
+      if (switches[i] != switchesNew[i]) {
+        switches[i] = switchesNew[i];
+      }
+    }
+  }
 };
 
 RED4ext::TTypedClass<ICustomGameController> cls("ICustomGameController");
@@ -270,6 +297,10 @@ public:
 
         controller->rawGameController = addedController;
         controller->Setup();
+        auto numSwitches = controller->rawGameController.SwitchCount();
+        for (auto i = 0; i < numSwitches; ++i) {
+          spdlog::info("          switch {} value: {}", i, (uint32_t)controller->switchesNew[i]);
+        }
         controllers.EmplaceBack(*controller);
       }
     });
@@ -320,10 +351,15 @@ public:
             UpdateInput(input, key, EInputAction::IACT_Axis,
                         (controller.axes[i] - controller.axisCenters[i]) * 2.0 *
                             (controller.axisInversions[i] ? -1.0 : 1.0),
-                        0, 0, hwnd,
-                        userIndex);
+                        0, 0, hwnd, userIndex);
             inputs->EmplaceBack(*input);
           }
+        }
+      }
+      auto switchCount = controller.rawGameController.SwitchCount();
+      for (int i = 0; i < switchCount; ++i) {
+        if (controller.switches[i] != controller.switchesNew[i]) {
+          controller.switches[i] = controller.switchesNew[i];
         }
       }
     }
@@ -331,16 +367,44 @@ public:
   };
 
   Input *__fastcall ResetInputs(RED4ext::DynArray<Input> *inputs, HWND hwnd) {
-    auto input = new Input();
-    UpdateInput(input, RED4ext::EInputKey::IK_Pad_RightAxisX, EInputAction::IACT_Axis, 0.0, 0, 0, hwnd, userIndex);
-    inputs->EmplaceBack(*input);
-    UpdateInput(input, RED4ext::EInputKey::IK_Pad_RightAxisY, EInputAction::IACT_Axis, 0.0, 0, 0, hwnd, userIndex);
-    inputs->EmplaceBack(*input);
-    UpdateInput(input, RED4ext::EInputKey::IK_Pad_LeftAxisX, EInputAction::IACT_Axis, 0.0, 0, 0, hwnd, userIndex);
-    inputs->EmplaceBack(*input);
-    UpdateInput(input, RED4ext::EInputKey::IK_Pad_LeftAxisY, EInputAction::IACT_Axis, 0.0, 0, 0, hwnd, userIndex);
-    inputs->EmplaceBack(*input);
-    return input;
+    for (auto &controller : controllers) {
+      if (!controller.connected)
+        continue;
+
+      controller.Update();
+
+      auto buttonCount = controller.rawGameController.ButtonCount();
+      for (int i = 0; i < buttonCount; ++i) {
+        if (controller.buttons[i] != controller.buttonsNew[i]) {
+          controller.buttons[i] = controller.buttonsNew[i];
+          auto key = controller.buttonKeys[i];
+          if (key != RED4ext::EInputKey::IK_None) {
+            auto input = new Input();
+            UpdateInput(input, key, EInputAction::IACT_Release, 1.0, 0, 0, hwnd, userIndex);
+            inputs->EmplaceBack(*input);
+          }
+        }
+      }
+      auto axisCount = controller.rawGameController.AxisCount();
+      for (int i = 0; i < axisCount; ++i) {
+        if (controller.axes[i] != controller.axesNew[i]) {
+          controller.axes[i] = controller.axesNew[i];
+          auto key = controller.axisKeys[i];
+          if (key != RED4ext::EInputKey::IK_None) {
+            auto input = new Input();
+            UpdateInput(input, key, EInputAction::IACT_Axis, controller.axisCenters[i], 0, 0, hwnd, userIndex);
+            inputs->EmplaceBack(*input);
+          }
+        }
+      }
+      auto switchCount = controller.rawGameController.SwitchCount();
+      for (int i = 0; i < switchCount; ++i) {
+        if (controller.switches[i] != controller.switchesNew[i]) {
+          controller.switches[i] = controller.switchesNew[i];
+        }
+      }
+    }
+    return inputs->end();
   };
 
   bool __fastcall IsEnabled(uint32_t *a1) { return true; }
@@ -444,6 +508,8 @@ RED4EXT_C_EXPORT void RED4EXT_CALL PostRegisterTypes() {
                                                 flags));
   // cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("array:GameControllerSwitchPosition"), "switches",
   // .ullptr, offsetof(ICustomGameController, switches)));
+  cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("array:Uint32"), "switches",
+                                                nullptr, offsetof(ICustomGameController, switches)));
   cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("array:Float"), "axes", nullptr,
                                                 offsetof(ICustomGameController, axes), "CustomGameController", flags));
   // cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("array:EInputKey"), "buttonKeys", nullptr,
