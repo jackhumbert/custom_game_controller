@@ -121,7 +121,7 @@ struct ICustomGameController : RED4ext::IScriptable {
   RED4ext::CClass *GetNativeType();
 
   RED4ext::DynArray<bool> buttons;
-  RED4ext::DynArray<GameControllerSwitchPosition> switches;
+  RED4ext::DynArray<uint32_t> switches;
   RED4ext::DynArray<float> axes;
 
   bool buttonsNew[0x100];
@@ -156,7 +156,7 @@ struct ICustomGameController : RED4ext::IScriptable {
 
     auto numSwitches = rawGameController.SwitchCount();
     for (int i = 0; i < numSwitches; ++i) {
-      switches.EmplaceBack(GameControllerSwitchPosition::Center);
+      switches.EmplaceBack(0);
     }
     switchesNew.resize(numSwitches);
 
@@ -200,8 +200,8 @@ struct ICustomGameController : RED4ext::IScriptable {
     }
     auto switchCount = rawGameController.SwitchCount();
     for (int i = 0; i < switchCount; ++i) {
-      if (switches[i] != switchesNew[i]) {
-        switches[i] = switchesNew[i];
+      if (switches[i] != (uint32_t)switchesNew[i]) {
+        switches[i] = (uint32_t)switchesNew[i];
       }
     }
   }
@@ -297,9 +297,14 @@ public:
 
         controller->rawGameController = addedController;
         controller->Setup();
+        auto numButtons = controller->rawGameController.ButtonCount();
+        for (auto i = 0; i < numButtons; ++i) {
+          spdlog::info("          button {} ({}) value: {}", i, (uint32_t)controller->rawGameController.GetButtonLabel(i),
+                       controller->buttons[i]);
+        }
         auto numSwitches = controller->rawGameController.SwitchCount();
         for (auto i = 0; i < numSwitches; ++i) {
-          spdlog::info("          switch {} value: {}", i, (uint32_t)controller->switchesNew[i]);
+          spdlog::info("          switch {} value: {}", i, (uint32_t)controller->switches[i]);
         }
         controllers.EmplaceBack(*controller);
       }
@@ -358,8 +363,8 @@ public:
       }
       auto switchCount = controller.rawGameController.SwitchCount();
       for (int i = 0; i < switchCount; ++i) {
-        if (controller.switches[i] != controller.switchesNew[i]) {
-          controller.switches[i] = controller.switchesNew[i];
+        if (controller.switches[i] != (uint32_t)controller.switchesNew[i]) {
+          controller.switches[i] = (uint32_t)controller.switchesNew[i];
         }
       }
     }
@@ -399,8 +404,8 @@ public:
       }
       auto switchCount = controller.rawGameController.SwitchCount();
       for (int i = 0; i < switchCount; ++i) {
-        if (controller.switches[i] != controller.switchesNew[i]) {
-          controller.switches[i] = controller.switchesNew[i];
+        if (controller.switches[i] != (uint32_t)controller.switchesNew[i]) {
+          controller.switches[i] = (uint32_t)controller.switchesNew[i];
         }
       }
     }
