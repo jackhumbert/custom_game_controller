@@ -11,6 +11,7 @@
 // }
 
 public native class ICustomGameController extends IScriptable {
+  public native let id: Uint64;
   public native let buttons: array<Bool>;
   public native let switches: array<Uint32>;
   public native let axes: array<Float>;

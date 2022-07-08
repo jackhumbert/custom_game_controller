@@ -124,6 +124,8 @@ struct ICustomGameController : RED4ext::IScriptable {
   RED4ext::DynArray<uint32_t> switches;
   RED4ext::DynArray<float> axes;
 
+  uint64_t id;
+
   bool buttonsNew[0x100];
   std::vector<GameControllerSwitchPosition> switchesNew;
   std::vector<double> axesNew;
@@ -138,6 +140,9 @@ struct ICustomGameController : RED4ext::IScriptable {
 
   void Setup() {
     connected = true;
+
+    auto nrid = winrt::to_string(rawGameController.NonRoamableId());
+    id = (uint64_t)RED4ext::CName(nrid.c_str());
 
     auto numButtons = rawGameController.ButtonCount();
     for (int i = 0; i < numButtons; ++i) {
@@ -268,6 +273,8 @@ public:
       auto name = winrt::to_string(addedController.DisplayName());
       spdlog::info("{:04X}:{:04X} {} connected", addedController.HardwareVendorId(),
                    addedController.HardwareProductId(), name);
+      auto id = winrt::to_string(addedController.NonRoamableId());
+      spdlog::info("          id:       0x{:016X}", (uint64_t)RED4ext::CName(id.c_str()));
       spdlog::info("          buttons:  {}", addedController.ButtonCount());
       spdlog::info("          axes:     {}", addedController.AxisCount());
       spdlog::info("          switches: {}", addedController.SwitchCount());
@@ -297,15 +304,15 @@ public:
 
         controller->rawGameController = addedController;
         controller->Setup();
-        auto numButtons = controller->rawGameController.ButtonCount();
-        for (auto i = 0; i < numButtons; ++i) {
-          spdlog::info("          button {} ({}) value: {}", i, (uint32_t)controller->rawGameController.GetButtonLabel(i),
-                       controller->buttons[i]);
-        }
-        auto numSwitches = controller->rawGameController.SwitchCount();
-        for (auto i = 0; i < numSwitches; ++i) {
-          spdlog::info("          switch {} value: {}", i, (uint32_t)controller->switches[i]);
-        }
+        //auto numButtons = controller->rawGameController.ButtonCount();
+        //for (auto i = 0; i < numButtons; ++i) {
+        //  spdlog::info("          button {} ({}) value: {}", i, (uint32_t)controller->rawGameController.GetButtonLabel(i),
+        //               controller->buttons[i]);
+        //}
+        //auto numSwitches = controller->rawGameController.SwitchCount();
+        //for (auto i = 0; i < numSwitches; ++i) {
+        //  spdlog::info("          switch {} value: {}", i, (uint32_t)controller->switches[i]);
+        //}
         controllers.EmplaceBack(*controller);
       }
     });
@@ -508,6 +515,9 @@ RED4EXT_C_EXPORT void RED4EXT_CALL PostRegisterTypes() {
       //.b36 = true,
   };
 
+  cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("Uint64"), "id", nullptr,
+                                                offsetof(ICustomGameController, id), "CustomGameController",
+                                                flags));
   cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("array:Bool"), "buttons", nullptr,
                                                 offsetof(ICustomGameController, buttons), "CustomGameController",
                                                 flags));
