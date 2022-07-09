@@ -220,11 +220,12 @@ struct ICustomGameController : RED4ext::IScriptable {
 
   float GetAxisValue(uint32_t index) { 
     float value = axesNew[index] - axisCenters[index];
+    value *= 2.0 * (0.5 + axisCenters[index]) * (axisInversions[index] ? -1.0 : 1.0);
     if (abs(value) < axisDeadzones[index]) {
       value = 0.0;
     } else {
       value -= axisDeadzones[index] * (value > 0.0 ? 1.0 : -1.0);
-      value *= (2.0 + axisDeadzones[index]) * (axisInversions[index] ? -1.0 : 1.0);
+      value /= (1.0 - axisDeadzones[index]);
     }
 
     auto onUpdate = GetType()->GetFunction("GetAxisValue");
