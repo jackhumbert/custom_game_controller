@@ -143,7 +143,7 @@ struct ICustomGameController : RED4ext::IScriptable {
     
     //auto nrid = winrt::to_string(rawGameController.NonRoamableId());
     //id = (uint64_t)RED4ext::CName(nrid.c_str());
-    id = id;
+    id = index;
 
     auto numButtons = rawGameController.ButtonCount();
     for (int i = 0; i < numButtons; ++i) {
