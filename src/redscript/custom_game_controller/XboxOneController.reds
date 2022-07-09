@@ -16,12 +16,12 @@ public class CustomGameController_045E_02EA extends ICustomGameController {
     this.SetButton(13 - 1, EInputKey.IK_Pad_DigitDown);
     this.SetButton(14 - 1, EInputKey.IK_Pad_DigitLeft);
 
-    this.SetAxis(1 - 1, EInputKey.IK_Pad_LeftAxisY,    false, 0.5);
-    this.SetAxis(2 - 1, EInputKey.IK_Pad_LeftAxisX,    false, 0.5);
-    this.SetAxis(3 - 1, EInputKey.IK_Pad_RightAxisY,   false, 0.5);
-    this.SetAxis(4 - 1, EInputKey.IK_Pad_RightAxisX,   false, 0.5);
-    this.SetAxis(5 - 1, EInputKey.IK_Pad_LeftTrigger,  false, 0.0);
-    this.SetAxis(6 - 1, EInputKey.IK_Pad_RightTrigger, false, 0.0);
+    this.SetAxis(1 - 1, EInputKey.IK_Pad_LeftAxisY,    false, 0.5, 0.05);
+    this.SetAxis(2 - 1, EInputKey.IK_Pad_LeftAxisX,    false, 0.5, 0.05);
+    this.SetAxis(3 - 1, EInputKey.IK_Pad_RightAxisY,   false, 0.5, 0.05);
+    this.SetAxis(4 - 1, EInputKey.IK_Pad_RightAxisX,   false, 0.5, 0.05);
+    this.SetAxis(5 - 1, EInputKey.IK_Pad_LeftTrigger,  false, 0.0, 0.05);
+    this.SetAxis(6 - 1, EInputKey.IK_Pad_RightTrigger, false, 0.0, 0.05);
   }
 
   public func OnUpdate() -> Void {

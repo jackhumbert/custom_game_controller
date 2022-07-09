@@ -124,6 +124,8 @@ struct ICustomGameController : RED4ext::IScriptable {
   RED4ext::DynArray<uint32_t> switches;
   RED4ext::DynArray<float> axes;
 
+  uint16_t pid;
+  uint16_t vid;
   int32_t id;
 
   bool buttonsNew[0x100];
@@ -134,6 +136,7 @@ struct ICustomGameController : RED4ext::IScriptable {
   RED4ext::DynArray<RED4ext::EInputKey> axisKeys;
   RED4ext::DynArray<bool> axisInversions;
   RED4ext::DynArray<float> axisCenters;
+  RED4ext::DynArray<float> axisDeadzones;
 
   bool connected;
   RawGameController rawGameController = RawGameController(nullptr);
@@ -144,6 +147,8 @@ struct ICustomGameController : RED4ext::IScriptable {
     //auto nrid = winrt::to_string(rawGameController.NonRoamableId());
     //id = (uint64_t)RED4ext::CName(nrid.c_str());
     id = index;
+    pid = rawGameController.HardwareProductId();
+    vid = rawGameController.HardwareVendorId();
 
     auto numButtons = rawGameController.ButtonCount();
     for (int i = 0; i < numButtons; ++i) {
@@ -157,6 +162,7 @@ struct ICustomGameController : RED4ext::IScriptable {
       axisKeys.EmplaceBack(RED4ext::EInputKey::IK_None);
       axisInversions.EmplaceBack(false);
       axisCenters.EmplaceBack(0.5);
+      axisDeadzones.EmplaceBack(0.01);
     }
     axesNew.resize(numAxes);
 
@@ -211,6 +217,31 @@ struct ICustomGameController : RED4ext::IScriptable {
       }
     }
   }
+
+  float GetAxisValue(uint32_t index) { 
+    float value = axesNew[index] - axisCenters[index];
+    if (abs(value) < axisDeadzones[index]) {
+      value = 0.0;
+    } else {
+      value -= axisDeadzones[index] * (value > 0.0 ? 1.0 : -1.0);
+      value *= (2.0 + axisDeadzones[index]) * (axisInversions[index] ? -1.0 : 1.0);
+    }
+
+    auto onUpdate = GetType()->GetFunction("GetAxisValue");
+    if (onUpdate) {
+      auto rtti = RED4ext::CRTTISystem::Get();
+      RED4ext::CStackType args[2];
+      args[0] = RED4ext::CStackType(rtti->GetType("Uint32"), &index);
+      args[1] = RED4ext::CStackType(rtti->GetType("Float"), &value);
+      float newValue = value;
+      auto result = RED4ext::CStackType(rtti->GetType("Float"), &newValue);
+      auto stack = RED4ext::CStack(this, args, 2, &result);
+      onUpdate->Execute(&stack);
+      value = *(float*)result.value;
+    }
+
+    return value;
+  }
 };
 
 RED4ext::TTypedClass<ICustomGameController> cls("ICustomGameController");
@@ -237,10 +268,12 @@ void SetAxisScripts(RED4ext::IScriptable *aContext, RED4ext::CStackFrame *aFrame
   RED4ext::EInputKey key;
   bool inverted;
   float center;
+  float deadzone;
   RED4ext::GetParameter(aFrame, &axis);
   RED4ext::GetParameter(aFrame, &key);
   RED4ext::GetParameter(aFrame, &inverted);
   RED4ext::GetParameter(aFrame, &center);
+  RED4ext::GetParameter(aFrame, &deadzone);
 
   aFrame->code++;
 
@@ -250,6 +283,7 @@ void SetAxisScripts(RED4ext::IScriptable *aContext, RED4ext::CStackFrame *aFrame
     icgc->axisKeys[axis] = key;
     icgc->axisInversions[axis] = inverted;
     icgc->axisCenters[axis] = center;
+    icgc->axisDeadzones[axis] = deadzone;
   }
 }
 
@@ -272,8 +306,10 @@ public:
         }
       }
       auto name = winrt::to_string(addedController.DisplayName());
-      spdlog::info("{:04X}:{:04X} {} connected", addedController.HardwareVendorId(),
-                   addedController.HardwareProductId(), name);
+      auto vid = addedController.HardwareVendorId();
+      auto pid = addedController.HardwareProductId();
+      spdlog::info("{:04X}:{:04X} {} connected", vid,
+                   pid, name);
       auto id = winrt::to_string(addedController.NonRoamableId());
       // spdlog::info("          id:       {}", (uint64_t)RED4ext::CName(id.c_str()));
       spdlog::info("          id:       {}", (uint64_t)controllers.size);
@@ -283,12 +319,18 @@ public:
 
       auto rtti = RED4ext::CRTTISystem::Get();
       char className[100];
-      sprintf(className, "CustomGameController_%04X_%04X", addedController.HardwareVendorId(),
-              addedController.HardwareProductId());
+      sprintf(className, "CustomGameController_%04X_%04X", vid, pid);
       auto controllerCls = rtti->GetClassByScriptName(className);
       if (!controllerCls) {
-        sprintf(className, "CustomGameController_%04x_%04x", addedController.HardwareVendorId(),
-                addedController.HardwareProductId());
+        sprintf(className, "CustomGameController_%04x_%04x", vid, pid);
+        controllerCls = rtti->GetClassByScriptName(className);
+      }
+      if (!controllerCls) {
+        sprintf(className, "CustomGameController_%04X_XXXX", vid);
+        controllerCls = rtti->GetClassByScriptName(className);
+      }
+      if (!controllerCls) {
+        sprintf(className, "CustomGameController_%04x_xxxx", vid);
         controllerCls = rtti->GetClassByScriptName(className);
       }
       if (!controllerCls) {
@@ -296,7 +338,7 @@ public:
         controllerCls = rtti->GetClassByScriptName(className);
       }
       if (controllerCls) {
-        spdlog::info("          class created: {}", className);
+        spdlog::info("          class: {}", className);
         auto controller = reinterpret_cast<ICustomGameController *>(controllerCls->AllocInstance(true));
         controllerCls->ConstructCls(controller);
 
@@ -325,7 +367,7 @@ public:
           for (auto &controller : controllers) {
             if (controller.rawGameController == removedController) {
               auto name = winrt::to_string(removedController.DisplayName());
-              spdlog::info("{:04X}:{:04X} ({}) {} disconnected from class: {}", removedController.HardwareVendorId(),
+              spdlog::info("{:04X}:{:04X} ({}) {} disconnected from: {}", removedController.HardwareVendorId(),
                            removedController.HardwareProductId(), controller.id, name,
                            RED4ext::CNamePool::Get(controller.GetType()->GetName()));
               controller.connected = false;
@@ -352,21 +394,21 @@ public:
             UpdateInput(input, key, controller.buttons[i] ? EInputAction::IACT_Press : EInputAction::IACT_Release, 1.0,
                         0, 0, hwnd, userIndex);
             inputs->EmplaceBack(*input);
+            delete input;
           }
         }
       }
       auto axisCount = controller.rawGameController.AxisCount();
       for (int i = 0; i < axisCount; ++i) {
-        if (controller.axes[i] != controller.axesNew[i]) {
-          controller.axes[i] = controller.axesNew[i];
+        float newValue = controller.GetAxisValue(i);
+        if (controller.axes[i] != newValue) {
+          controller.axes[i] = newValue;
           auto key = controller.axisKeys[i];
           if (key != RED4ext::EInputKey::IK_None) {
             auto input = new Input();
-            UpdateInput(input, key, EInputAction::IACT_Axis,
-                        (controller.axes[i] - controller.axisCenters[i]) * 2.0 *
-                            (controller.axisInversions[i] ? -1.0 : 1.0),
-                        0, 0, hwnd, userIndex);
+            UpdateInput(input, key, EInputAction::IACT_Axis, newValue, 0, 0, hwnd, userIndex);
             inputs->EmplaceBack(*input);
+            delete input;
           }
         }
       }
@@ -389,26 +431,22 @@ public:
 
       auto buttonCount = controller.rawGameController.ButtonCount();
       for (int i = 0; i < buttonCount; ++i) {
-        if (controller.buttons[i] != controller.buttonsNew[i]) {
-          controller.buttons[i] = controller.buttonsNew[i];
-          auto key = controller.buttonKeys[i];
-          if (key != RED4ext::EInputKey::IK_None) {
-            auto input = new Input();
-            UpdateInput(input, key, EInputAction::IACT_Release, 1.0, 0, 0, hwnd, userIndex);
-            inputs->EmplaceBack(*input);
-          }
+        auto key = controller.buttonKeys[i];
+        if (key != RED4ext::EInputKey::IK_None) {
+          auto input = new Input();
+          UpdateInput(input, key, EInputAction::IACT_Release, 1.0, 0, 0, hwnd, userIndex);
+          inputs->EmplaceBack(*input);
+          delete input;
         }
       }
       auto axisCount = controller.rawGameController.AxisCount();
       for (int i = 0; i < axisCount; ++i) {
-        if (controller.axes[i] != controller.axesNew[i]) {
-          controller.axes[i] = controller.axesNew[i];
-          auto key = controller.axisKeys[i];
-          if (key != RED4ext::EInputKey::IK_None) {
-            auto input = new Input();
-            UpdateInput(input, key, EInputAction::IACT_Axis, controller.axisCenters[i], 0, 0, hwnd, userIndex);
-            inputs->EmplaceBack(*input);
-          }
+        auto key = controller.axisKeys[i];
+        if (key != RED4ext::EInputKey::IK_None) {
+          auto input = new Input();
+          UpdateInput(input, key, EInputAction::IACT_Axis, 0.0, 0, 0, hwnd, userIndex);
+          inputs->EmplaceBack(*input);
+          delete input;
         }
       }
       auto switchCount = controller.rawGameController.SwitchCount();
@@ -445,10 +483,16 @@ BaseGamepad *__fastcall InitializeXPad(BaseGamepad *gamepad, uint32_t gamepadInd
 }
 
 // Allows joystick keys to be treated as axes
-bool __fastcall IsJoystick(uint16_t key) {
+bool __fastcall IsJoystickAxis(uint16_t key) {
   auto result = false;
   result |= ((key >= (uint16_t)RED4ext::EInputKey::IK_JoyX) && (key <= (uint16_t)RED4ext::EInputKey::IK_JoyR));
   result |= ((key >= (uint16_t)RED4ext::EInputKey::IK_JoyU) && (key <= (uint16_t)RED4ext::EInputKey::IK_JoySlider2));
+  return result;
+}
+
+bool __fastcall IsJoystick(uint16_t key) {
+  auto result = IsJoystickAxis(key);
+  result |= ((key >= (uint16_t)RED4ext::EInputKey::IK_Joy1) && (key <= (uint16_t)RED4ext::EInputKey::IK_Joy16));
   return result;
 }
 
@@ -459,7 +503,7 @@ constexpr uintptr_t IsAxisAddr = 0x2D146A0 + 0xC00;
 decltype(&IsAxis) IsAxis_Original;
 
 bool __fastcall IsAxis(uint16_t key) {
-  return IsAxis_Original(key) || IsJoystick(key);
+  return IsAxis_Original(key) || IsJoystickAxis(key);
 }
 
 // BA 96 00 00 00 0F B7 C1 66 2B C2 66 83 F8 05 76
@@ -468,15 +512,23 @@ constexpr uintptr_t IsButtonToAxisAddr = 0x2D146B0 + 0xC00;
 decltype(&IsButtonToAxis) IsButtonToAxis_Original;
 
 bool __fastcall IsButtonToAxis(uint16_t key) { 
-  return IsButtonToAxis_Original(key) && !IsJoystick(key);
+  return IsButtonToAxis_Original(key) && !IsJoystickAxis(key);
 }
 
+// BA 88 00 00 00 0F B7 C1 66 2B C2 66 83 F8 13 76
+bool __fastcall IsGamepad(uint16_t key);
+constexpr uintptr_t IsGamepadAddr = 0x2D146F0 + 0xC00;
+decltype(&IsGamepad) IsGamepad_Original;
+
+bool __fastcall IsGamepad(uint16_t key) { 
+  return IsGamepad_Original(key) || IsJoystick(key);
+}
 
 RED4EXT_C_EXPORT void RED4EXT_CALL RegisterTypes() {
   spdlog::info("Registering classes & types");
   auto rtti = RED4ext::CRTTISystem::Get();
-  cls.flags = {.isNative = true};
-  // cls.flags = {.isAbstract = true, .isNative = true, .isImportOnly = true};
+  //cls.flags = {.isNative = true};
+   cls.flags = {.isAbstract = true, .isNative = true};
   cls.parent = rtti->GetClass("IScriptable");
   rtti->RegisterType(&cls);
 
@@ -509,35 +561,38 @@ RED4EXT_C_EXPORT void RED4EXT_CALL PostRegisterTypes() {
   // RED4ext::CNamePool::Add("array:GameControllerSwitchPosition");
   auto rtti = RED4ext::CRTTISystem::Get();
 
-  RED4ext::CProperty::Flags flags = {
+  //RED4ext::CProperty::Flags flags = {
       //.b21 = true,
       //.b29 = true,
       //.b31 = true,
       //.b35 = true,
       //.b36 = true,
-  };
+  //};
 
   cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("Int32"), "id", nullptr,
-                                                offsetof(ICustomGameController, id), "CustomGameController",
-                                                flags));
+                                                offsetof(ICustomGameController, id)));
+  cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("Uint16"), "vid", nullptr,
+                                                offsetof(ICustomGameController, vid)));
+  cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("Uint16"), "pid", nullptr,
+                                                offsetof(ICustomGameController, pid)));
   cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("array:Bool"), "buttons", nullptr,
-                                                offsetof(ICustomGameController, buttons), "CustomGameController",
-                                                flags));
+                                                offsetof(ICustomGameController, buttons)));
   // cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("array:GameControllerSwitchPosition"), "switches",
   // .ullptr, offsetof(ICustomGameController, switches)));
   cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("array:Uint32"), "switches",
                                                 nullptr, offsetof(ICustomGameController, switches)));
   cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("array:Float"), "axes", nullptr,
-                                                offsetof(ICustomGameController, axes), "CustomGameController", flags));
-  // cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("array:EInputKey"), "buttonKeys", nullptr,
-  //                                               offsetof(ICustomGameController, buttonKeys), "CustomGameController",
-  //                                               flags));
-  // cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("array:EInputKey"), "axisKeys", nullptr,
-  //                                               offsetof(ICustomGameController, axisKeys), "CustomGameController",
-  //                                               flags));
-  // cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("array:Bool"), "axisInversions", nullptr,
-  //                                               offsetof(ICustomGameController, axisInversions),
-  //                                               "CustomGameController", flags));
+                                                offsetof(ICustomGameController, axes)));
+   cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("array:EInputKey"), "buttonKeys", nullptr,
+                                                 offsetof(ICustomGameController, buttonKeys)));
+   cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("array:EInputKey"), "axisKeys", nullptr,
+                                                 offsetof(ICustomGameController, axisKeys)));
+   cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("array:Bool"), "axisInversions", nullptr,
+                                                 offsetof(ICustomGameController, axisInversions)));
+   cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("array:Float"), "axisDeadzones", nullptr,
+                                                 offsetof(ICustomGameController, axisDeadzones)));
+   cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("array:Float"), "axisCenters", nullptr,
+                                                 offsetof(ICustomGameController, axisCenters)));
 
   auto setButton =
       RED4ext::CClassFunction::Create(&cls, "SetButton", "SetButton", &SetButtonScripts, {.isNative = true});
@@ -569,6 +624,9 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
     while (!aSdk->hooking->Attach(aHandle, RED4EXT_OFFSET_TO_ADDR(IsButtonToAxisAddr), &IsButtonToAxis,
                                   reinterpret_cast<void **>(&IsButtonToAxis_Original)))
       ;
+    while (!aSdk->hooking->Attach(aHandle, RED4EXT_OFFSET_TO_ADDR(IsGamepadAddr), &IsGamepad,
+                                  reinterpret_cast<void **>(&IsGamepad_Original)))
+      ;
 
     break;
   }
@@ -580,6 +638,7 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
     aSdk->hooking->Detach(aHandle, RED4EXT_OFFSET_TO_ADDR(InitializeXPadAddr));
     aSdk->hooking->Detach(aHandle, RED4EXT_OFFSET_TO_ADDR(IsAxisAddr));
     aSdk->hooking->Detach(aHandle, RED4EXT_OFFSET_TO_ADDR(IsButtonToAxisAddr));
+    aSdk->hooking->Detach(aHandle, RED4EXT_OFFSET_TO_ADDR(IsGamepadAddr));
     spdlog::shutdown();
     break;
   }

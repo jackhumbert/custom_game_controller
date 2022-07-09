@@ -1,38 +1,8 @@
-// enum GameControllerSwitchPosition {
-//   Center    = 0,
-//   Up        = 1,
-//   UpRight   = 2,
-//   Right     = 3,
-//   DownRight = 4,
-//   Down      = 5,
-//   DownLeft  = 6,
-//   Left      = 7,
-//   UpLeft    = 8
-// }
-
-public native class ICustomGameController extends IScriptable {
-  public native let id: Int32;
-  public native let buttons: array<Bool>;
-  public native let switches: array<Uint32>;
-  public native let axes: array<Float>;
-  
-  // public native let buttonKeys: array<EInputKey>;
-  // public native let axisKeys: array<EInputKey>;
-  // public native let axisInversions: array<Bool>;
-
-  public native func SetButton(button: Int32, key: EInputKey);
-  public native func SetAxis(axis: Int32, key: EInputKey, inverted: Bool, center: Float);
-
-  public func OnSetup() -> Void { }
-
-  public func OnUpdate() -> Void { }
-}
-
+// This is a fallback class that's used if a VID_PID specific one is not found
 public class CustomGameController extends ICustomGameController {
   public func OnSetup() -> Void {
 
   }
-
   public func OnUpdate() -> Void {
 
   }
