@@ -274,7 +274,7 @@ public:
       spdlog::info("{:04X}:{:04X} {} connected", addedController.HardwareVendorId(),
                    addedController.HardwareProductId(), name);
       auto id = winrt::to_string(addedController.NonRoamableId());
-      spdlog::info("          id:       0x{:016X}", (uint64_t)RED4ext::CName(id.c_str()));
+      spdlog::info("          id:       {}", (uint64_t)RED4ext::CName(id.c_str()));
       spdlog::info("          buttons:  {}", addedController.ButtonCount());
       spdlog::info("          axes:     {}", addedController.AxisCount());
       spdlog::info("          switches: {}", addedController.SwitchCount());

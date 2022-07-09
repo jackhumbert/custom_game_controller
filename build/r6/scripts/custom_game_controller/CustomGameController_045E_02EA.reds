@@ -12,8 +12,8 @@ public class CustomGameController_045E_02EA extends ICustomGameController {
     this.SetButton(9  - 1, EInputKey.IK_Pad_LeftThumb);
     this.SetButton(10 - 1, EInputKey.IK_Pad_RightThumb);
     this.SetButton(11 - 1, EInputKey.IK_Pad_DigitUp);
-    this.SetButton(12 - 1, EInputKey.IK_Pad_DigitDown);
-    this.SetButton(13 - 1, EInputKey.IK_Pad_DigitRight);
+    this.SetButton(12 - 1, EInputKey.IK_Pad_DigitRight);
+    this.SetButton(13 - 1, EInputKey.IK_Pad_DigitDown);
     this.SetButton(14 - 1, EInputKey.IK_Pad_DigitLeft);
 
     this.SetAxis(1 - 1, EInputKey.IK_Pad_LeftAxisY,    false, 0.5);
