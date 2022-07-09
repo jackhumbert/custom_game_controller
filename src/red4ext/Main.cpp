@@ -124,7 +124,7 @@ struct ICustomGameController : RED4ext::IScriptable {
   RED4ext::DynArray<uint32_t> switches;
   RED4ext::DynArray<float> axes;
 
-  uint64_t id;
+  int32_t id;
 
   bool buttonsNew[0x100];
   std::vector<GameControllerSwitchPosition> switchesNew;
@@ -138,11 +138,12 @@ struct ICustomGameController : RED4ext::IScriptable {
   bool connected;
   RawGameController rawGameController = RawGameController(nullptr);
 
-  void Setup() {
+  void Setup(int32_t index) {
     connected = true;
-
-    auto nrid = winrt::to_string(rawGameController.NonRoamableId());
-    id = (uint64_t)RED4ext::CName(nrid.c_str());
+    
+    //auto nrid = winrt::to_string(rawGameController.NonRoamableId());
+    //id = (uint64_t)RED4ext::CName(nrid.c_str());
+    id = id;
 
     auto numButtons = rawGameController.ButtonCount();
     for (int i = 0; i < numButtons; ++i) {
@@ -274,7 +275,8 @@ public:
       spdlog::info("{:04X}:{:04X} {} connected", addedController.HardwareVendorId(),
                    addedController.HardwareProductId(), name);
       auto id = winrt::to_string(addedController.NonRoamableId());
-      spdlog::info("          id:       {}", (uint64_t)RED4ext::CName(id.c_str()));
+      // spdlog::info("          id:       {}", (uint64_t)RED4ext::CName(id.c_str()));
+      spdlog::info("          id:       {}", (uint64_t)controllers.size);
       spdlog::info("          buttons:  {}", addedController.ButtonCount());
       spdlog::info("          axes:     {}", addedController.AxisCount());
       spdlog::info("          switches: {}", addedController.SwitchCount());
@@ -303,7 +305,7 @@ public:
         controller->unk30 = controllerCls;
 
         controller->rawGameController = addedController;
-        controller->Setup();
+        controller->Setup(controllers.size);
         //auto numButtons = controller->rawGameController.ButtonCount();
         //for (auto i = 0; i < numButtons; ++i) {
         //  spdlog::info("          button {} ({}) value: {}", i, (uint32_t)controller->rawGameController.GetButtonLabel(i),
@@ -323,8 +325,8 @@ public:
           for (auto &controller : controllers) {
             if (controller.rawGameController == removedController) {
               auto name = winrt::to_string(removedController.DisplayName());
-              spdlog::info("{:04X}:{:04X} {} disconnected from class: {}", removedController.HardwareVendorId(),
-                           removedController.HardwareProductId(), name,
+              spdlog::info("{:04X}:{:04X} ({}) {} disconnected from class: {}", removedController.HardwareVendorId(),
+                           removedController.HardwareProductId(), controller.id, name,
                            RED4ext::CNamePool::Get(controller.GetType()->GetName()));
               controller.connected = false;
               return;
@@ -515,7 +517,7 @@ RED4EXT_C_EXPORT void RED4EXT_CALL PostRegisterTypes() {
       //.b36 = true,
   };
 
-  cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("Uint64"), "id", nullptr,
+  cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("Int32"), "id", nullptr,
                                                 offsetof(ICustomGameController, id), "CustomGameController",
                                                 flags));
   cls.props.PushBack(RED4ext::CProperty::Create(rtti->GetType("array:Bool"), "buttons", nullptr,

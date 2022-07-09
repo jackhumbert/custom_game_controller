@@ -1,6 +1,6 @@
 public class CustomGameController_044F_B10A extends ICustomGameController {
   public func OnSetup() -> Void {
-    if Equals(this.id, 2776384202937347685ul) {
+    if this.id == 0 {
       // left hand, maybe?
       this.SetButton(1  - 1, EInputKey.IK_Pad_A_CROSS);
       this.SetButton(2  - 1, EInputKey.IK_Pad_B_CIRCLE);
