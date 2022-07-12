@@ -13,6 +13,7 @@
 #include <concrt.h>
 #include <winrt/Windows.Gaming.Input.h>
 #include <winrt/Windows.Foundation.h>
+#include <deque>
 using namespace winrt;
 using namespace Windows::Gaming::Input;
 
@@ -139,6 +140,7 @@ struct ICustomGameController : RED4ext::IScriptable {
   RED4ext::DynArray<float> axisDeadzones;
 
   bool connected;
+  bool calibrated;
   RawGameController rawGameController = RawGameController(nullptr);
 
   void Setup(int32_t index) {
@@ -185,12 +187,28 @@ struct ICustomGameController : RED4ext::IScriptable {
   void Update() {
     if (rawGameController) {
       rawGameController.GetCurrentReading(buttonsNew, switchesNew, axesNew);
-    }
 
-    auto onUpdate = GetType()->GetFunction("OnUpdate");
-    if (onUpdate) {
-      auto stack = RED4ext::CStack(this, nullptr, 0, nullptr, 0);
-      onUpdate->Execute(&stack);
+      if (!calibrated) {
+        auto axisCount = rawGameController.AxisCount();
+        auto allZero = true;
+        for (int i = 0; i < axisCount; i++) {
+          allZero &= (axesNew[i] == 0.0);
+        }
+        if (!allZero) {
+          spdlog::info("Calibrating controller: {}", id);
+          for (int i = 0; i < axisCount; i++) {
+            axisCenters[i] = axesNew[i];
+            spdlog::info("Center for axis {}: {}", i, axisCenters[i]);
+          }
+          calibrated = true;
+        }
+      }
+
+      auto onUpdate = GetType()->GetFunction("OnUpdate");
+      if (onUpdate) {
+        auto stack = RED4ext::CStack(this, nullptr, 0, nullptr, 0);
+        onUpdate->Execute(&stack);
+      }
     }
   };
 
@@ -220,12 +238,27 @@ struct ICustomGameController : RED4ext::IScriptable {
 
   float GetAxisValue(uint32_t index) { 
     float value = axesNew[index] - axisCenters[index];
-    value *= 2.0 * (0.5 + axisCenters[index]) * (axisInversions[index] ? -1.0 : 1.0);
+    if (value > 0.0) {
+      if (axisCenters[index] != 1.0) {
+        value /= (1.0 - axisCenters[index]);
+      }
+    } else {
+      if (axisCenters[index] != 0.0) {
+        value /= axisCenters[index];
+      }
+    }
+    value *= (axisInversions[index] ? -1.0 : 1.0);
     if (abs(value) < axisDeadzones[index]) {
       value = 0.0;
     } else {
-      value -= axisDeadzones[index] * (value > 0.0 ? 1.0 : -1.0);
-      value /= (1.0 - axisDeadzones[index]);
+      if (value > 0.0) {
+        value -= axisDeadzones[index];
+      } else {
+        value += axisDeadzones[index];
+      }
+      if (axisDeadzones[index] != 1.0) {
+        value /= (1.0 - axisDeadzones[index]);
+      }
     }
 
     auto onUpdate = GetType()->GetFunction("GetAxisValue");
@@ -372,6 +405,7 @@ public:
                            removedController.HardwareProductId(), controller.id, name,
                            RED4ext::CNamePool::Get(controller.GetType()->GetName()));
               controller.connected = false;
+              controller.calibrated = false;
               return;
             }
           }
