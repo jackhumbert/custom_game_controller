@@ -41,6 +41,7 @@ packed*.zip
 build*.zip
 resources/custom_game_controller.zip
 resources/install_log.xml
+prereqs.redscripts
 
 Cyberpunk2077.exe*
 REDEngineErrorReporter.exe*
