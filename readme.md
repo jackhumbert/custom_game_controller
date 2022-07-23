@@ -68,6 +68,7 @@ Configuration is done through redscript classes. Some examples are provided.
 
 * [RED4ext](https://github.com/WopsS/RED4ext)
 * [Redscript](https://github.com/jac3km4/redscript)
+* [Input Loader](https://github.com/jackhumbert/cyberpunk2077-input-loader)
 
 ## Bugs
 
