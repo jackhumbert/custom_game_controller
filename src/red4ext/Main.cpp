@@ -88,9 +88,28 @@ Input *__fastcall UpdateInput(Input *input, RED4ext::EInputKey key, EInputAction
   return input;
 }
 
+class IPad {
+  static constexpr const uintptr_t VFT_RVA = 0x31A7928;
+  // 00
+  virtual uintptr_t Destructor(char a1) {
+    RED4ext::RelocFunc<decltype(&IPad::Destructor)> call(VFT_RVA, 0x00);
+    return call(this, a1);
+  }
+};
+
+class XPad : IPad {
+  static constexpr const uintptr_t VFT_RVA = 0x31A7970;
+  // 00
+  virtual uintptr_t Destructor(char a1) override {
+    RED4ext::RelocFunc<decltype(&XPad::Destructor)> call(VFT_RVA, 0x00);
+    return call(this, a1);
+  }
+};
+
+
 class BaseGamepad {
 public:
-  virtual BaseGamepad* Release(byte a1) { return this; }                                          // 00
+  virtual ~BaseGamepad() = default;                                                               // 00
   virtual Input* GetInputs(RED4ext::DynArray<Input>* inputs, HWND hwnd) { return inputs->end(); } // 08
 
   virtual Input* ResetInputs(RED4ext::DynArray<Input>* inputs, HWND hwnd) {                       // 10
@@ -119,7 +138,8 @@ protected:
 concurrency::critical_section controllerListLock;
 
 struct ICustomGameController : RED4ext::IScriptable {
-  RED4ext::CClass *GetNativeType();
+  virtual RED4ext::CClass *GetNativeType() override;
+  virtual ~ICustomGameController() override = default;
 
   RED4ext::DynArray<bool> buttons;
   RED4ext::DynArray<uint32_t> switches;
@@ -321,7 +341,18 @@ void SetAxisScripts(RED4ext::IScriptable *aContext, RED4ext::CStackFrame *aFrame
   }
 }
 
+// 1.52 RVA: 0x196260 / 1663584
+/// @pattern 48 85 C9 74 2E 53 48 83 EC 20 48 8B D9 48 8D 4C 24 30 E8 09 02 00 00 BA 01 00 00 00 48 8B CB E8
+void __fastcall sub_196260(void *a1) {
+  RED4ext::RelocFunc<decltype(&sub_196260)> call(0x196260);
+  return call(a1);
+}
+
 class CustomGamepad : public BaseGamepad {
+  virtual ~CustomGamepad() override {
+      sub_196260(this);
+    };
+
 public:
   RED4ext::DynArray<ICustomGameController> controllers;
 
@@ -498,9 +529,11 @@ public:
 };
 
 // Replaces XPads with our custom gamepad class
-// 48 8D 05 A9 3C 9B 02 89 51 08 48 89 01 0F 57 C0
+// 1.52 RVA: 0x795360 / 7951200
+// 1.6  RVA: 0x79C250 / 7979600
+/// @pattern 48 8D 05 ?  ?  ?  02 89 51 08 48 89 01 0F 57 C0 0F 11 41 0C 48 8B C1 C3
 BaseGamepad *__fastcall InitializeXPad(BaseGamepad *, uint32_t);
-constexpr uintptr_t InitializeXPadAddr = 0x794760 + 0xC00;
+constexpr uintptr_t InitializeXPadAddr = 0x79C250;
 decltype(&InitializeXPad) InitializeXPad_Original;
 
 BaseGamepad *__fastcall InitializeXPad(BaseGamepad *gamepad, uint32_t gamepadIndex) {
@@ -532,27 +565,29 @@ bool __fastcall IsJoystick(uint16_t key) {
 }
 
 // takes a 16b version of RED4ext::EInputKey
-// B8 96 00 00 00 66 2B C8 66 83 F9 05 0F 96 C0 C3
+// 1.6 RVA: 0x2D6E2C0 / 47637184
+/// @pattern  B8 96 00 00 00 66 2B C8 66 83 F9 05 0F 96 C0 C3
 bool __fastcall IsAxis(uint16_t key);
-constexpr uintptr_t IsAxisAddr = 0x2D146A0 + 0xC00;
+constexpr uintptr_t IsAxisAddr = 0x2D6E2C0;
 decltype(&IsAxis) IsAxis_Original;
 
 bool __fastcall IsAxis(uint16_t key) {
   return IsAxis_Original(key) || IsJoystickAxis(key);
 }
 
-// BA 96 00 00 00 0F B7 C1 66 2B C2 66 83 F8 05 76
+// 1.6 RVA: 0x2D6E2D0 / 47637200
+/// @pattern BA 96 00 00 00 0F B7 C1 66 2B C2 66 83 F8 05 76 21 B8 E4 00 00 00 66 2B C8 66 83 F9 20 77 10 48
 bool __fastcall IsButtonToAxis(uint16_t key);
-constexpr uintptr_t IsButtonToAxisAddr = 0x2D146B0 + 0xC00;
+constexpr uintptr_t IsButtonToAxisAddr = 0x2D6E2D0;
 decltype(&IsButtonToAxis) IsButtonToAxis_Original;
 
 bool __fastcall IsButtonToAxis(uint16_t key) { 
   return IsButtonToAxis_Original(key) && !IsJoystickAxis(key);
 }
-
-// BA 88 00 00 00 0F B7 C1 66 2B C2 66 83 F8 13 76
+// 1.6 RVA: 0x2D6E310 / 47637264
+/// @pattern BA 88 00 00 00 0F B7 C1 66 2B C2 66 83 F8 13 76 11 B8 FF 00 00 00 66 2B C8 66 83 F9 07 76 03 32
 bool __fastcall IsGamepad(uint16_t key);
-constexpr uintptr_t IsGamepadAddr = 0x2D146F0 + 0xC00;
+constexpr uintptr_t IsGamepadAddr = 0x2D6E310;
 decltype(&IsGamepad) IsGamepad_Original;
 
 bool __fastcall IsGamepad(uint16_t key) { 
