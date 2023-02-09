@@ -74,4 +74,15 @@ Configuration is done through redscript classes. Some examples are provided.
 
 If you come across something that doesn't work quite right, or interferes with another mod, [search for or create an issue!](https://github.com/jackhumbert/custom_game_controller/issues) I have a lot of things on a private TODO list still, but can start to move things to Github issues.
 
+## Development
+
+These are some of the steps I take to update the mod for new versions of the game - it involves some manual address looking-up using IDA, a custom version of Zoltan, and my fork of RED4ext.SDK:
+
+1. Merge deps/red4ext.sdk from upstream
+1. Update all addresses with "1.62 RVA:" (that matches latest game version) in RED4ext.SDK
+  1. Patterns & hints for each addresss should be in each file
+  1. Addresses that don't have the current version likely aren't used
+1. Run "Generate Addresses" in the VS Code project
+1. Update IPad & XPad VFT addresses in src/red4ext/Main.cpp
+
 Special thanks to @psiberx for [Codeware Lib](https://github.com/psiberx/cp2077-codeware/), [InkPlayground Demo](https://github.com/psiberx/cp2077-playground), and Redscript & CET examples on Discord, @WopsS for [RED4ext](https://github.com/WopsS/RED4ext), @jac3km4 for [Redscript toolkit](https://github.com/jac3km4/redscript), @yamashi for [CET](https://github.com/yamashi/CyberEngineTweaks), @rfuzzo & team (especially @seberoth!) for [WolvenKit](https://github.com/WolvenKit/WolvenKit), and all of them for being helpful on Discord.

@@ -14,6 +14,8 @@
 #include <winrt/Windows.Gaming.Input.h>
 #include <winrt/Windows.Foundation.h>
 #include <deque>
+#include "Addresses.hpp"
+
 using namespace winrt;
 using namespace Windows::Gaming::Input;
 
@@ -89,7 +91,10 @@ Input *__fastcall UpdateInput(Input *input, RED4ext::EInputKey key, EInputAction
 }
 
 class IPad {
-  static constexpr const uintptr_t VFT_RVA = 0x31A7928;
+  // more before "InputSystemGamepadConnected" string
+  // 1.60 RVA: 0x31A7928
+  // 1.62 RVA: 0x31AFAD8
+  static constexpr const uintptr_t VFT_RVA = 0x31AFAD8;
   // 00
   virtual uintptr_t Destructor(char a1) {
     RED4ext::RelocFunc<decltype(&IPad::Destructor)> call(VFT_RVA, 0x00);
@@ -98,7 +103,10 @@ class IPad {
 };
 
 class XPad : IPad {
-  static constexpr const uintptr_t VFT_RVA = 0x31A7970;
+  // bit before "InputSystemGamepadConnected" string
+  // 1.60 RVA: 0x31A7970
+  // 1.62 RVA: 0x31AFB20
+  static constexpr const uintptr_t VFT_RVA = 0x31AFB20;
   // 00
   virtual uintptr_t Destructor(char a1) override {
     RED4ext::RelocFunc<decltype(&XPad::Destructor)> call(VFT_RVA, 0x00);
@@ -341,16 +349,14 @@ void SetAxisScripts(RED4ext::IScriptable *aContext, RED4ext::CStackFrame *aFrame
   }
 }
 
-// 1.52 RVA: 0x196260 / 1663584
-/// @pattern 48 85 C9 74 2E 53 48 83 EC 20 48 8B D9 48 8D 4C 24 30 E8 09 02 00 00 BA 01 00 00 00 48 8B CB E8
-void __fastcall sub_196260(void *a1) {
-  RED4ext::RelocFunc<decltype(&sub_196260)> call(0x196260);
+void __fastcall GamepadDestructor(void *a1) {
+  RED4ext::RelocFunc<decltype(&GamepadDestructor)> call(GamepadDestructorAddr);
   return call(a1);
 }
 
 class CustomGamepad : public BaseGamepad {
   virtual ~CustomGamepad() override {
-      sub_196260(this);
+      GamepadDestructor(this);
     };
 
 public:
@@ -404,7 +410,7 @@ public:
       }
       if (controllerCls) {
         spdlog::info("          class: {}", className);
-        auto controller = reinterpret_cast<ICustomGameController *>(controllerCls->AllocInstance(true));
+        auto controller = reinterpret_cast<ICustomGameController *>(controllerCls->CreateInstance(true));
         controllerCls->ConstructCls(controller);
 
         auto handle = RED4ext::Handle<ICustomGameController>(controller);
@@ -529,11 +535,7 @@ public:
 };
 
 // Replaces XPads with our custom gamepad class
-// 1.52 RVA: 0x795360 / 7951200
-// 1.6  RVA: 0x79C250 / 7979600
-/// @pattern 48 8D 05 ?  ?  ?  02 89 51 08 48 89 01 0F 57 C0 0F 11 41 0C 48 8B C1 C3
 BaseGamepad *__fastcall InitializeXPad(BaseGamepad *, uint32_t);
-constexpr uintptr_t InitializeXPadAddr = 0x79C250;
 decltype(&InitializeXPad) InitializeXPad_Original;
 
 BaseGamepad *__fastcall InitializeXPad(BaseGamepad *gamepad, uint32_t gamepadIndex) {
@@ -565,29 +567,21 @@ bool __fastcall IsJoystick(uint16_t key) {
 }
 
 // takes a 16b version of RED4ext::EInputKey
-// 1.6 RVA: 0x2D6E2C0 / 47637184
-/// @pattern  B8 96 00 00 00 66 2B C8 66 83 F9 05 0F 96 C0 C3
 bool __fastcall IsAxis(uint16_t key);
-constexpr uintptr_t IsAxisAddr = 0x2D6E2C0;
 decltype(&IsAxis) IsAxis_Original;
 
 bool __fastcall IsAxis(uint16_t key) {
   return IsAxis_Original(key) || IsJoystickAxis(key);
 }
 
-// 1.6 RVA: 0x2D6E2D0 / 47637200
-/// @pattern BA 96 00 00 00 0F B7 C1 66 2B C2 66 83 F8 05 76 21 B8 E4 00 00 00 66 2B C8 66 83 F9 20 77 10 48
 bool __fastcall IsButtonToAxis(uint16_t key);
-constexpr uintptr_t IsButtonToAxisAddr = 0x2D6E2D0;
 decltype(&IsButtonToAxis) IsButtonToAxis_Original;
 
 bool __fastcall IsButtonToAxis(uint16_t key) { 
   return IsButtonToAxis_Original(key) && !IsJoystickAxis(key);
 }
-// 1.6 RVA: 0x2D6E310 / 47637264
-/// @pattern BA 88 00 00 00 0F B7 C1 66 2B C2 66 83 F8 13 76 11 B8 FF 00 00 00 66 2B C8 66 83 F9 07 76 03 32
+
 bool __fastcall IsGamepad(uint16_t key);
-constexpr uintptr_t IsGamepadAddr = 0x2D6E310;
 decltype(&IsGamepad) IsGamepad_Original;
 
 bool __fastcall IsGamepad(uint16_t key) { 
@@ -681,7 +675,7 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
     // is not initalized yet.
 
     Utils::CreateLogger();
-    spdlog::info("Starting up");
+    spdlog::info("Starting up Custom Game Controller v0.0.4");
 
     RED4ext::RTTIRegistrator::Add(RegisterTypes, PostRegisterTypes);
 
@@ -720,7 +714,7 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
 RED4EXT_C_EXPORT void RED4EXT_CALL Query(RED4ext::PluginInfo *aInfo) {
   aInfo->name = L"Custom Game Controller";
   aInfo->author = L"Jack Humbert";
-  aInfo->version = RED4EXT_SEMVER(0, 0, 3);
+  aInfo->version = RED4EXT_SEMVER(0, 0, 4);
   aInfo->runtime = RED4EXT_RUNTIME_LATEST;
   aInfo->sdk = RED4EXT_SDK_LATEST;
 }
