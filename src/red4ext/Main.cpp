@@ -567,11 +567,11 @@ bool __fastcall IsJoystick(uint16_t key) {
 }
 
 // takes a 16b version of RED4ext::EInputKey
-bool __fastcall IsAxis(uint16_t key);
-decltype(&IsAxis) IsAxis_Original;
+bool __fastcall IsRelative(uint16_t key);
+decltype(&IsRelative) IsRelative_Original;
 
-bool __fastcall IsAxis(uint16_t key) {
-  return IsAxis_Original(key) || IsJoystickAxis(key);
+bool __fastcall IsRelative(uint16_t key) {
+  return IsRelative_Original(key) || IsJoystickAxis(key);
 }
 
 bool __fastcall IsButtonToAxis(uint16_t key);

@@ -17,13 +17,15 @@ using GamepadDestructor = void __fastcall (void *);
 /// @hash 3372825422
 using InitializeXPad = void *__fastcall (void *, uint32_t deviceID);
 
-// bool ManagerBackend::IsAxis(uint16_t);
+// bool ManagerBackend::IsRelative(uint16_t);
 /// @hash 2490568903
-using IsAxis = bool __fastcall (uint16_t key);
+using IsRelative = bool __fastcall (uint16_t key);
 
 // bool ManagerBackend::IsKey(uint16_t);
 /// @hash 989204148
 using IsButtonToAxis = bool __fastcall (uint16_t key);
+
+// 2490568903 / 0x947310C7
 
 // bool ManagerBackend::IsPadKey(uint16_t);
 /// @hash 1763577801
