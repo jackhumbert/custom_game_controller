@@ -1,5 +1,7 @@
 #pragma once
 
+#include <RED4ext/RED4ext.hpp>
+
 class FileStream : public RED4ext::BaseStream
 {
 public:

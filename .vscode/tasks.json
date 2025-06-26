@@ -5,16 +5,12 @@
     "tasks": [
       {
         "label": "Lint Installed",
-        "type": "shell",
-        "command": "tools\\lint_installed.bat",
-        "options": {
-          "shell": {
-            "executable": "cmd.exe",
-            "args": [
-              "/d", "/c"
-            ]
-          }
-        },
+        "type": "cmake",
+        "command": "build",
+        "targets": [
+          "redscript_lint_installed"
+        ],
+        "detail": "Lint the redscript files installed into the game's directory",
         "presentation": {
           "echo": true,
           "reveal": "always",
@@ -28,15 +24,12 @@
       },
       {
         "label": "Generate Addresses",
-        "command": "tools\\addresses.bat",
-        "options": {
-          "shell": {
-            "executable": "cmd.exe",
-            "args": [
-              "/d", "/c"
-            ]
-          }
-        },
+        "type": "cmake",
+        "command": "build",
+        "targets": [
+          "custom_game_controller.addresses"
+        ],
+        "detail": "Generate addreses used by Mod via Zoltan",
         "presentation": {
           "echo": true,
           "reveal": "always",
@@ -50,16 +43,12 @@
       },
       {
         "label": "Lint",
-        "type": "shell",
-        "command": "tools\\lint.bat",
-        "options": {
-          "shell": {
-            "executable": "cmd.exe",
-            "args": [
-              "/d", "/c"
-            ]
-          }
-        },
+        "type": "cmake",
+        "command": "build",
+        "targets": [
+          "redscript_lint"
+        ],
+        "detail": "Lint the redscript files not yet packed",
         "presentation": {
           "echo": true,
           "reveal": "always",
@@ -72,17 +61,13 @@
         "problemMatcher": []
       },
       {
-        "label": "Build",
-        "type": "shell",
-        "command": "tools\\build.bat",
-        "options": {
-          "shell": {
-            "executable": "cmd.exe",
-            "args": [
-              "/d", "/c"
-            ]
-          }
-        },
+        "label": "Lint Packed",
+        "type": "cmake",
+        "command": "build",
+        "targets": [
+          "redscript_lint_game_dir"
+        ],
+        "detail": "Lint the redscript files packed into the local ./game_dir",
         "presentation": {
           "echo": true,
           "reveal": "always",
@@ -95,17 +80,13 @@
         "problemMatcher": []
       },
       {
-        "label": "Pack",
-        "type": "shell",
-        "command": "tools\\pack.bat",
-        "options": {
-          "shell": {
-            "executable": "cmd.exe",
-            "args": [
-              "/d", "/c"
-            ]
-          }
-        },
+        "label": "Release",
+        "type": "cmake",
+        "command": "build",
+        "targets": [
+          "release"
+        ],
+        "detail": "Generate the zip file from ./game_dir for a release",
         "presentation": {
           "echo": true,
           "reveal": "always",
@@ -118,89 +99,9 @@
         "problemMatcher": []
       },
       {
-        "label": "Lint/Build",
-        "type": "shell",
-        "command": "tools\\build.bat",
-        "options": {
-          "shell": {
-            "executable": "cmd.exe",
-            "args": [
-              "/d", "/c"
-            ]
-          }
-        },
-        "presentation": {
-          "echo": true,
-          "reveal": "always",
-          "focus": false,
-          "panel": "shared",
-          "showReuseMessage": false,
-          "clear": false
-        },
-        "group": "build",
-        "problemMatcher": [],
-        "dependsOn": ["Lint"]
-      },
-      {
-        "label": "Install",
-        "type": "shell",
-        "command": "tools\\install.bat",
-        "options": {
-          "shell": {
-            "executable": "cmd.exe",
-            "args": [
-              "/d", "/c"
-            ]
-          }
-        },
-        "presentation": {
-          "echo": true,
-          "reveal": "always",
-          "focus": false,
-          "panel": "shared",
-          "showReuseMessage": false,
-          "clear": false
-        },
-        "group": "build",
-        "problemMatcher": []
-      },
-      {
-        "label": "Lint/Build/Install",
-        "type": "shell",
-        "command": "tools\\install.bat",
-        "options": {
-          "shell": {
-            "executable": "cmd.exe",
-            "args": [
-              "/d", "/c"
-            ]
-          }
-        },
-        "presentation": {
-          "echo": true,
-          "reveal": "always",
-          "focus": false,
-          "panel": "shared",
-          "showReuseMessage": false,
-          "clear": false
-        },
-        "group": "build",
-        "problemMatcher": [],
-        "dependsOrder": "sequence",
-        "dependsOn": ["Lint/Build"]
-      },
-      {
-        "label": "Run",
+        "label": "Run Cyberpunk 2077",
         "type": "shell",
         "command": "\"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Cyberpunk 2077\\bin\\x64\\Cyberpunk2077.exe\"",
-        "options": {
-          "shell": {
-            "executable": "cmd.exe",
-            "args": [
-              "/d", "/c"
-            ]
-          }
-        },
         "presentation": {
           "echo": true,
           "reveal": "always",
@@ -213,17 +114,9 @@
         "problemMatcher": []
       },
       {
-        "label": "Lint/Build/Install/Run",
+        "label": "Install & Run",
         "type": "shell",
         "command": "\"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Cyberpunk 2077\\bin\\x64\\Cyberpunk2077.exe\"",
-        "options": {
-          "shell": {
-            "executable": "cmd.exe",
-            "args": [
-              "/d", "/c"
-            ]
-          }
-        },
         "presentation": {
           "echo": true,
           "reveal": "always",
@@ -234,31 +127,44 @@
         },
         "group": "build",
         "problemMatcher": [],
-        "dependsOn": ["Lint/Build/Install"]
+        "dependsOn": [
+          "Install Mod"
+        ],
+        "detail": "Install Mod and start the game"
       },
       {
-        "label": "Install/Run",
-        "type": "shell",
-        "command": "\"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Cyberpunk 2077\\bin\\x64\\Cyberpunk2077.exe\"",
-        "options": {
-          "shell": {
-            "executable": "cmd.exe",
-            "args": [
-              "/d", "/c"
-            ]
-          }
-        },
-        "presentation": {
-          "echo": true,
-          "reveal": "always",
-          "focus": false,
-          "panel": "shared",
-          "showReuseMessage": false,
-          "clear": false
-        },
+        "type": "cmake",
+        "label": "Build DLL",
+        "command": "build",
+        "targets": [
+          "custom_game_controller.dll"
+        ],
         "group": "build",
         "problemMatcher": [],
-        "dependsOn": ["Install"]
+        "detail": "Compile custom_game_controller.dll"
       },
+      {
+        "type": "cmake",
+        "label": "Build Redscript",
+        "command": "build",
+        "targets": [
+          "redscript"
+        ],
+        "group": "build",
+        "problemMatcher": [],
+        "detail": "Pack redscript files"
+      },
+      {
+        "label": "Build Mod",
+        "command": "echo ${command:cmake.build}",
+        "problemMatcher": [],
+        "detail": "Compile .dll & packed redscript files"
+      },
+      {
+        "label": "Install Mod",
+        "command": "echo ${command:cmake.install}",
+        "problemMatcher": [],
+        "detail": "Install files into the game's installation directory"
+      }
     ]
   }

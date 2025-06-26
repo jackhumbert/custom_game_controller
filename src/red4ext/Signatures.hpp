@@ -2,7 +2,6 @@
 #include <RED4ext/RED4ext.hpp>
 #include <RED4ext/Scripting/Natives/Generated/ent/Entity.hpp>
 #include <RED4ext/Scripting/Natives/Generated/vehicle/BaseObject.hpp>
-#include "Addresses.hpp"
 #include <RED4ext/Scripting/Natives/Generated/game/EffectSystem.hpp>
 
 // XInput Destructor
@@ -19,7 +18,7 @@ using InitializeXPad = void *__fastcall (void *, uint32_t deviceID);
 
 // bool ManagerBackend::IsRelative(uint16_t);
 /// @hash 2490568903
-using IsRelative = bool __fastcall (uint16_t key);
+using IsAxis = bool __fastcall (uint16_t key);
 
 // bool ManagerBackend::IsKey(uint16_t);
 /// @hash 989204148

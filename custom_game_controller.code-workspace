@@ -1,15 +1,20 @@
 {
 	"folders": [
 		{
-			"name": "src",
-			"path": "src"
-		},
-		{
 			"path": "."
 		}
 	],
 	"settings": {
 		"files.associations": {
+			"*.reds": "redscript",
+			"*.ws": "redmod-script",
+			"*.script": "redmod-script",
+			"*.tweak": "redmod-tweak",
+			"*.1sc": "c",
+			"*.bt": "c",
+			"*.xl": "yaml",
+			"*.idc": "cpp",
+			".redscript-ide": "toml",
 			"algorithm": "cpp",
 			"array": "cpp",
 			"atomic": "cpp",
@@ -88,7 +93,14 @@
 			"xstring": "cpp",
 			"xtr1common": "cpp",
 			"xtree": "cpp",
-			"xutility": "cpp"
+			"xutility": "cpp",
+			"coroutine": "cpp",
+			"cstdarg": "cpp",
+			"future": "cpp",
+			"random": "cpp",
+			"ranges": "cpp",
+			"source_location": "cpp",
+			"span": "cpp"
 		},
 		"editor.tabSize": 2,
 		"redscript.scriptCachePath": "C:\\Users\\Jack\\Documents\\cyberpunk\\custom_game_controller\\prereqs.redscripts"
