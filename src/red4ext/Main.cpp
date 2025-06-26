@@ -9,7 +9,7 @@
 #include <Windows.h>
 #include <Dbt.h>
 #include <deque>
-#include <Registrar.hpp>
+#include <CyberpunkMod.hpp>
 #include <RedLib.hpp>
 // #include <InputLoader.hpp>
 

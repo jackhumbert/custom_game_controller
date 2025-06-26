@@ -1,16 +1,7 @@
-#include <Registrar.hpp>
-#include <RED4ext/Scripting/Natives/Generated/EInputKey.hpp>
+#include <IsJoystick.hpp>
 #include <IsJoystickAxis.hpp>
-
-// REGISTER_HOOK_HASH(bool, 0, IsJoystick, uint16_t key) {
-//   auto result = IsJoystickAxis(key);
-//   result |= ((key >= (uint16_t)RED4ext::EInputKey::IK_Joy1) && (key <= (uint16_t)RED4ext::EInputKey::IK_Joy16));
-//   return result;
-// }
-
+#include <IsJoystickButton.hpp>
 
 bool IsJoystick(uint16_t key) {
-  auto result = IsJoystickAxis(key);
-  result |= ((key >= (uint16_t)RED4ext::EInputKey::IK_Joy1) && (key <= (uint16_t)RED4ext::EInputKey::IK_Joy16));
-  return result;
+  return IsJoystickAxis(key) || IsJoystickButton(key);
 }

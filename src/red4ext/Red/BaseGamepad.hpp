@@ -12,6 +12,15 @@
 using namespace winrt;
 using namespace Windows::Gaming::Input;
 
+struct SomeArgs {
+  uint8_t unk00;
+  uint8_t unk01;
+  uint8_t unk02;
+  uint8_t unk03;
+  uint8_t unk04;
+  uint8_t unk05;
+};
+
 class BaseGamepad {
 public:
   virtual ~BaseGamepad() {                                                    // 00
@@ -33,11 +42,11 @@ public:
     return EInputDevice::XINPUT_PAD;
   }
 
-  virtual void sub_28(uint32_t * unk) {                                       // 28 fires on setup? related to axis
+  virtual void sub_28(SomeArgs * unk) {                                       // 28 fires on setup? related to axis
     return;
-    }                         
+  }                         
 
-  virtual uint64_t sub_30(uint32_t * unk) {                                   // 30 fires after setup
+  virtual uint64_t sub_30(SomeArgs * unk) {                                   // 30 fires after setup scePadSetLightBar
     return 0;
   }                                                    
 

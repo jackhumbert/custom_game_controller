@@ -2,4 +2,4 @@
 
 #include <cstdint>
 
-bool IsJoystick(uint16_t key);
+bool IsKey(uint16_t key);
