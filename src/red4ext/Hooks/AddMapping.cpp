@@ -9,14 +9,14 @@ using namespace RED4ext;
 class IHookable {
 protected:
   template<typename R, uint32_t Hash, typename... Args>
-  R Hook(Args&&... args) {
-    static auto func = reinterpret_cast<R (*)(void *, Args...)>(UniversalRelocBase::Resolve(Hash));
+  R Hook(Args... args) {
+    static auto func = UniversalRelocFunc<R (*)(IHookable *, Args...)>(Hash);
     return func(this, std::forward<Args>(args)...);
   }
 
   template<typename R, uint32_t Hash, typename... Args>
-  R Hook(Args&&... args) const {
-    static auto func = reinterpret_cast<R (*)(const void *, Args...)>(UniversalRelocBase::Resolve(Hash));
+  R Hook(Args... args) const {
+    static auto func = UniversalRelocFunc<R (*)(IHookable const *, Args...)>(Hash);
     return func(this, std::forward<Args>(args)...);
   }
 };
@@ -72,15 +72,15 @@ struct UserMappingAxis : IHookable {
   };
 
   bool Add(uint16_t key, CName name, uint8_t invert) { 
-    return Hook<bool, 3994556065>(key, name, invert);
+    // return Hook<bool, 3994556065>(key, name, invert);
     
     // manually add to avoid the inlined IsAxis
     if (!IsAxis(key))
       return false;
 
     Axis axis {
-      // .realAxisInput = DynArray<RealAxisInput>(Memory::Allocator<Memory::PoolGMPL_Input>::Get()),
-      // .unk10 = DynArray<Unknown>(Memory::Allocator<Memory::PoolGMPL_Input>::Get()),
+      .realAxisInput = DynArray<RealAxisInput>(Memory::Allocator<Memory::PoolGMPL_Input>::Get()),
+      .unk10 = DynArray<Unknown>(Memory::Allocator<Memory::PoolGMPL_Input>::Get()),
       .invert = 0,
       .unk21 = 0,
       .unk28 = 0
@@ -175,14 +175,7 @@ struct UserMapping : IHookable {
   }
 
   MappingPreset const * GetMappingPresetByName(CName name) { 
-    // idk why this doesn't work
-    // return Hook<MappingPreset const *, 834084382>(name);
-    for (auto const & mappingPreset : this->mappingPresets) {
-      if (mappingPreset->name == name) {
-        return mappingPreset;
-      }
-    }
-    return nullptr;
+    return Hook<MappingPreset const *, 834084382>(name);
   }
 };
 RED4EXT_ASSERT_SIZE(UserMapping, 0x198);
