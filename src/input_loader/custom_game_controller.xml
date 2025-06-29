@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <bindings>
-  
-
+	<mapping name="PackGlider2" type="Button">
+		<button id="IK_Pad_B_CIRCLE" />
+		<button id="IK_X" />
+	</mapping>
 </bindings>

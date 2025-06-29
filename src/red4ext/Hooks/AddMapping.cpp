@@ -7,15 +7,15 @@
 using namespace RED4ext;
 
 class IHookable {
-protected:
+public:
   template<typename R, uint32_t Hash, typename... Args>
-  R Hook(Args... args) {
+  inline R Hook(Args... args) {
     static auto func = UniversalRelocFunc<R (*)(IHookable *, Args...)>(Hash);
     return func(this, std::forward<Args>(args)...);
   }
 
   template<typename R, uint32_t Hash, typename... Args>
-  R Hook(Args... args) const {
+  inline R Hook(Args... args) const {
     static auto func = UniversalRelocFunc<R (*)(IHookable const *, Args...)>(Hash);
     return func(this, std::forward<Args>(args)...);
   }
@@ -179,6 +179,7 @@ struct UserMapping : IHookable {
   }
 };
 RED4EXT_ASSERT_SIZE(UserMapping, 0x198);
+RED4EXT_ASSERT_OFFSET(UserMapping, axes, 0x60);
 
 enum EMappingType : uint8_t {
   Internal = 0, // maybe
@@ -207,9 +208,9 @@ struct ListenerAction : IScriptable
 };
 
 
-REGISTER_HOOK_HASH(void, 1768234721, DLA_Something, DLA * self, ListenerAction* la, uint8_t * unk) {
-  return DLA_Something_Original(self, la, unk);
-}
+// REGISTER_HOOK_HASH(void, 1768234721, DLA_Something, DLA * self, ListenerAction* la, uint8_t * unk) {
+//   return DLA_Something_Original(self, la, unk);
+// }
 
 
 REGISTER_HOOK_HASH(bool, 1385634503, AddMapping, 
@@ -267,25 +268,19 @@ REGISTER_HOOK_HASH(bool, 1385634503, AddMapping,
     } break;
     case Axis: {
       if (presetName) {
-        auto mappingPreset = self->GetMappingPresetByName(presetName);
-        // if (mappingPreset)
-          invert = mappingPreset->axis;
+        invert = self->GetMappingPresetByName(presetName)->axis;
       }
       status = self->axes->Add(key, name, invert);
     } break;
     case FakeAxis: {
       if (presetName) {
-        auto mappingPreset = self->GetMappingPresetByName(presetName);
-        // if (mappingPreset)
-          invert = mappingPreset->fakeAxis;
+        invert = self->GetMappingPresetByName(presetName)->fakeAxis;
       }
       status = self->axes->AddFake(key, name, val, invert);
     } break;
     case Relative: {
       if (presetName) {
-        auto mappingPreset = self->GetMappingPresetByName(presetName);
-        // if (mappingPreset)
-          invert = mappingPreset->relativeAxis;
+        invert = self->GetMappingPresetByName(presetName)->relativeAxis;
       }
       status = self->relativeAxes->Add(key, name, invert);
     } break;
@@ -293,8 +288,8 @@ REGISTER_HOOK_HASH(bool, 1385634503, AddMapping,
       status = true;
   }
   if (status) {
-    keyMap->actions.PushBack(mapping);
-    nameMap->mappings.PushBack(mapping);
+    keyMap->actions.EmplaceBack(mapping);
+    nameMap->mappings.EmplaceBack(mapping);
   }
   return status;
 }
