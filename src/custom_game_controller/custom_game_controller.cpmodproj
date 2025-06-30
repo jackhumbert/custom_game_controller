@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CP77Mod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>custom_game_controller</Name>
+  <ModName>custom_game_controller</ModName>
+  <Author>Jack Humbert</Author>
+  <Email>jack.humb@gmail.com</Email>
+  <Version>0.1.0</Version>
+  <OpenProjectFiles>base\gameplay\gui\common\buttons\base_buttons.inkwidget</OpenProjectFiles>
+  <OpenProjectFiles>base\gameplay\gui\common\input\icons_keyboard.inkatlas</OpenProjectFiles>
+  <OpenProjectFiles>base\gameplay\gui\common\input\icons_durango.inkatlas</OpenProjectFiles>
+  <OpenProjectFiles>base\gameplay\gui\common\input\icons_nintendo.inkatlas</OpenProjectFiles>
+  <OpenProjectFiles>base\gameplay\gui\common\input\icons_orbis.inkatlas</OpenProjectFiles>
+  <OpenProjectFiles>base\gameplay\gui\common\input\icons_steamdeck.inkatlas</OpenProjectFiles>
+  <OpenProjectFiles>base\gameplay\gui\common\input\icons_durango_1080p.xbm</OpenProjectFiles>
+  <OpenProjectFiles>engine\ink\input\input_key_icon_dictionary.json</OpenProjectFiles>
+  <OpenProjectFiles>user\jackhumbert\icons_joystick.inkatlas</OpenProjectFiles>
+  <OpenProjectFiles>user\jackhumbert\icons_joystick.xbm</OpenProjectFiles>
+  <OpenProjectFiles>user\jackhumbert\icons_joystick_1080p.xbm</OpenProjectFiles>
+  <OpenProjectFiles>base\gameplay\gui\common\input\icons_keyboard.xbm</OpenProjectFiles>
+</CP77Mod>

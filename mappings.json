@@ -1,0 +1,702 @@
+[
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_A_CROSS"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "a"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_B_CIRCLE"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "b"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_X_SQUARE"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "x"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_Y_TRIANGLE"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "y"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 1,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_A_CROSS"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "a_hold"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 1,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_B_CIRCLE"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "b_hold"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 1,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_X_SQUARE"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "x_hold"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 1,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_Y_TRIANGLE"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "y_hold"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_LeftThumb"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "left_thumb"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_RightThumb"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "right_thumb"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_LeftAxisX"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "left_axis_right"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_LeftAxisY"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "left_axis_up"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_RightAxisX"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "right_axis_right"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_RightAxisY"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "right_axis_up"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_LeftAxisX"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "left_axis_leftright"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_LeftAxisY"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "left_axis_updown"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_RightAxisX"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "right_axis_leftright"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_RightAxisY"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "right_axis_updown"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 1,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_LeftThumb"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "left_thumb"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 1,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_RightThumb"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "right_thumb"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_DigitUp"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "dpad_up"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_DigitLeft"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "dpad_left"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_DigitRight"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "dpad_right"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_DigitDown"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "dpad_down"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "ICK_Pad_DigitUpDown"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "dpad_up_down"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "ICK_Pad_DigitLeftRight"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "dpad_left_right"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 1,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_DigitUp"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "dpad_up_hold"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 1,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_DigitLeft"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "dpad_left_hold"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 1,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_DigitRight"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "dpad_right_hold"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 1,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_DigitDown"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "dpad_down_hold"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 1,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "ICK_Pad_DigitUpDown"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "dpad_up_down_hold"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 1,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "ICK_Pad_DigitLeftRight"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "dpad_left_right_hold"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_LeftShoulder"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "left_shoulder"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_RightShoulder"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "right_shoulder"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_LeftTrigger"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "left_trigger"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_RightTrigger"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "right_trigger"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 1,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_LeftShoulder"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "left_shoulder_hold"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 1,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_RightShoulder"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "right_shoulder_hold"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 1,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_LeftTrigger"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "left_trigger_hold"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 1,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_RightTrigger"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "right_trigger_hold"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_Start"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "start"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_Back_Select"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "back"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 1,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_Start"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "start_hold"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 1,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_Back_Select"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "back_hold"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_Fake_LeftAxis"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "left_axis_all"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_Fake_RelativeLeftAxis"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "left_axis_all"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_Fake_RelativeRightAxis"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "right_axis_all"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_Fake_RightAxis"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "right_axis_all"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_Fake_DigitLeftRight"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "dpad_left_right"
+    }
+  },
+  {
+    "$type": "inkInputIconMappingJSON",
+    "hold": 0,
+    "id": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "IK_Pad_Fake_DigitUpDown"
+    },
+    "part": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "dpad_up_down"
+    }
+  }
+]

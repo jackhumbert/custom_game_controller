@@ -1,4 +1,5 @@
 public abstract native class ICustomGameController extends IScriptable {
+  public native let calibrated: Bool;
   public native let pid: Uint16;
   public native let vid: Uint16;
   public native let id: Int32;

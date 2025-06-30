@@ -137,6 +137,7 @@ float ICustomGameController::GetAxisValue(uint32_t index) {
 RTTI_DEFINE_CLASS(ICustomGameController, "ICustomGameController", {
   RTTI_METHOD(SetButton);
   RTTI_METHOD(SetAxis);
+  RTTI_PROPERTY(calibrated);
   RTTI_PROPERTY(id);
   RTTI_PROPERTY(vid);
   RTTI_PROPERTY(pid);

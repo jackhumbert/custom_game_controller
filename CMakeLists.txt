@@ -21,6 +21,7 @@ configure_mod(
 )
 
 set(LOAD_INPUTS_FROM_RED4EXT ON)
+set(LOAD_ARCHIVES_FROM_RED4EXT ON)
 set(LOAD_REDSCRIPT_FROM_RED4EXT ON)
 
 find_program(ZOLTAN_CLANG_EXE NAMES zoltan-clang.exe PATHS "${MOD_TOOLS_DIR}" CACHE)
@@ -31,10 +32,13 @@ find_program(CYBERPUNK_2077_EXE NAMES Cyberpunk2077.exe PATHS "${CYBERPUNK_2077_
 configure_red4ext(src/red4ext)
 # configure_red4ext_addresses(Addresses.hpp)
 
+configure_archives(src/custom_game_controller/packed/archive/pc/mod/custom_game_controller.archive src/archive_xl/custom_game_controller.archive.xl)
+
 find_package(RedLib)
 find_package(Detours)
 find_package(Spdlog)
 find_package(InputLoader)
+find_package(ArchiveXL)
 
 # target_include_directories(${MOD_SLUG}.dll
 #   PUBLIC
@@ -45,7 +49,7 @@ target_link_libraries(${MOD_SLUG}.dll
   PUBLIC
     Detours
     spdlog
-    # ArchiveXL
+    ArchiveXL
     RedLib
     input_loader.dll
 )

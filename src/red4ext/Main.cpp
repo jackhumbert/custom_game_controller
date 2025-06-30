@@ -12,6 +12,7 @@
 #include <CyberpunkMod.hpp>
 #include <RedLib.hpp>
 // #include <InputLoader.hpp>
+#include <ArchiveXL.hpp>
 
 RED4EXT_C_EXPORT void RED4EXT_CALL RegisterTypes() {
   spdlog::info("Registering classes & types");
@@ -39,7 +40,7 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
     aSdk->scripts->Add(aHandle, L"packed.reds");
     aSdk->scripts->Add(aHandle, L"module.reds");
     // InputLoader::Add(aHandle, L"inputs.xml");
-    // ArchiveXL::RegisterArchive(aHandle, "ModSettings.archive");
+    ArchiveXL::RegisterArchive(aHandle, "custom_game_controller.archive");
     ModModuleFactory::GetInstance().Load(aSdk, aHandle);
 
     // while (!aSdk->hooking->Attach(aHandle, RED4EXT_OFFSET_TO_ADDR(InitializeXPadAddr), &InitializeXPad,

@@ -1,6 +1,7 @@
 public class CustomGameController_0EB7_0020 extends ICustomGameController {
   public func OnSetup() -> Void {
     if Equals(this.id, 1) {
+      this.calibrated = true;
       this.SetButton(3  - 1, EInputKey.IK_Pad_B_CIRCLE);
       this.SetButton(7  - 1, EInputKey.IK_Pad_DigitLeft);
       this.SetButton(11  - 1, EInputKey.IK_Pad_DigitRight);

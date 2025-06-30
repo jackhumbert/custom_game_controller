@@ -113,6 +113,10 @@ public:
         });
   }
 
+  virtual EInputDevice GetDeviceType() const override {
+    return EInputDevice::STADIA;
+  }
+
   virtual void Update(RED4ext::DynArray<Input> & inputs, HWND hwnd) override {
     for (auto &controller : controllers) {
       if (!controller.connected)
