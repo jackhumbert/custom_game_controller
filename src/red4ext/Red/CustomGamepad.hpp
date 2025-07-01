@@ -43,8 +43,7 @@ public:
       auto name = winrt::to_string(addedController.DisplayName());
       auto vid = addedController.HardwareVendorId();
       auto pid = addedController.HardwareProductId();
-      spdlog::info("{:04X}:{:04X} {} connected", vid,
-                   pid, name);
+      spdlog::info("{:04X}:{:04X} {} connected", vid, pid, name);
       auto id = winrt::to_string(addedController.NonRoamableId());
       // spdlog::info("          id:       {}", (uint64_t)RED4ext::CName(id.c_str()));
       spdlog::info("          id:       {}", (uint64_t)controllers.size);
@@ -135,6 +134,10 @@ public:
                         0, 0, hwnd, userIndex);
             inputs.EmplaceBack(*input);
             delete input;
+          } else {
+            auto vid = controller.rawGameController.HardwareVendorId();
+            auto pid = controller.rawGameController.HardwareProductId();
+            spdlog::info("{:04X}:{:04X} Button {} not assigned", vid, pid, i);
           }
         }
       }

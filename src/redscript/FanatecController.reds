@@ -14,7 +14,7 @@ public class CustomGameController_0EB7_0020 extends ICustomGameController {
       this.SetAxis(2, EInputKey.IK_JoySlider1, true, 1.0, 0.001); // gas
       // this.SetAxis(3, EInputKey.IK_Pad_LeftTrigger, false, 0.0, 0.001);
       // this.SetAxis(4, EInputKey.IK_Pad_RightTrigger, false, 0.0, 0.001); 
-      this.SetAxis(5, EInputKey.IK_Pad_A_CROSS, true, 1.0, 0.001); // brake
+      this.SetAxis(5, EInputKey.IK_JoyY, true, 1.0, 0.001); // brake
       // this.SetAxis(6, EInputKey.IK_Pad_RightAxisX, true, 1.0, 0.001);
       // this.SetAxis(7, EInputKey.IK_Pad_RightAxisY, false, 0.5, 0.001);
     }
