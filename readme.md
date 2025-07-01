@@ -1,58 +1,6 @@
 # Custom Game Controller
 
-This is a mod for Cyberpunk 2077 that enables raw joystick/game controller input and configuration. Multiple devices (like two joysticks) can be used at the same time. For examples of configurations, [check out the redscript folder](https://github.com/jackhumbert/custom_game_controller/tree/main/src/redscript/custom_game_controller). Below is a some of the documentation for `ICustomGameController`:
-
-```swift
-﻿public abstract native class ICustomGameController extends IScriptable {
-  public native let pid: Uint16;
-  public native let vid: Uint16;
-  public native let id: Int32;
-  public native let buttons: array<Bool>;
-  // This is the enum used by `switches` interally:
-  //   Center    = 0
-  //   Up        = 1
-  //   UpRight   = 2
-  //   Right     = 3
-  //   DownRight = 4
-  //   Down      = 5
-  //   DownLeft  = 6
-  //   Left      = 7
-  //   UpLeft    = 8
-  public native let switches: array<Uint32>;
-  public native let axes: array<Float>;
- 
-  public native let buttonKeys: array<EInputKey>;
-  public native let axisKeys: array<EInputKey>;
-  public native let axisInversions: array<Bool>;
-  public native let axisCenters: array<Float>;
-  public native let axisDeadzones: array<Float>;
-
-  // Maps a controller button to a key
-  //   button: 0-indexed
-  //   key: https://nativedb.red4ext.com/EInputKey
-  public native func SetButton(button: Int32, key: EInputKey);
-
-  // Maps a controller axis to a key
-  //   axis: 0-indexed
-  //   key: https://nativedb.red4ext.com/EInputKey
-  //   inverted: whether or not the axis should be inverted
-  //   center: value between 0.0-1.0 that acts as the natural position of the axis
-  //   deadzone: value between 0.0-1.0 that acts as a threshold for movement
-  public native func SetAxis(axis: Int32, key: EInputKey, inverted: Bool, center: Float, deadzone: Float);
-
-  // Called after the controller is created but not intialized (no values are read yet)
-  // Use this to call SetButton & SetAxis
-  public abstract func OnSetup() -> Void;
-
-  // Called after new values are read, but before they're assigned
-  public abstract func OnUpdate() -> Void;
-
-  // Called when axis values are read from the controller, after center & deadzone correction
-  //   index: 0-indexed axis index
-  //   value: axis value to be compared & assigned if different
-  public abstract func GetAxisValue(index: Uint32, value: Float) -> Float;
-}
-```
+This is a mod for Cyberpunk 2077 that enables raw joystick/game controller input and configuration. Multiple devices (like two joysticks) can be used at the same time. For examples of configurations, [check out the examples folder](https://github.com/jackhumbert/custom_game_controller/tree/main/examples). 
 
 ## Installation
 
@@ -73,16 +21,5 @@ Configuration is done through redscript classes. Some examples are provided.
 ## Bugs
 
 If you come across something that doesn't work quite right, or interferes with another mod, [search for or create an issue!](https://github.com/jackhumbert/custom_game_controller/issues) I have a lot of things on a private TODO list still, but can start to move things to Github issues.
-
-## Development
-
-These are some of the steps I take to update the mod for new versions of the game - it involves some manual address looking-up using IDA, a custom version of Zoltan, and my fork of RED4ext.SDK:
-
-1. Merge deps/red4ext.sdk from upstream
-1. Update all addresses with "1.62 RVA:" (that matches latest game version) in RED4ext.SDK
-  1. Patterns & hints for each addresss should be in each file
-  1. Addresses that don't have the current version likely aren't used
-1. Run "Generate Addresses" in the VS Code project
-1. Update IPad & XPad VFT addresses in src/red4ext/Main.cpp
 
 Special thanks to @psiberx for [Codeware Lib](https://github.com/psiberx/cp2077-codeware/), [InkPlayground Demo](https://github.com/psiberx/cp2077-playground), and Redscript & CET examples on Discord, @WopsS for [RED4ext](https://github.com/WopsS/RED4ext), @jac3km4 for [Redscript toolkit](https://github.com/jac3km4/redscript), @yamashi for [CET](https://github.com/yamashi/CyberEngineTweaks), @rfuzzo & team (especially @seberoth!) for [WolvenKit](https://github.com/WolvenKit/WolvenKit), and all of them for being helpful on Discord.
